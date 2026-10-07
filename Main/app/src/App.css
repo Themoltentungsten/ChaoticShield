@@ -1,0 +1,5 @@
+/* App-level resets — no Vite boilerplate constraints */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}

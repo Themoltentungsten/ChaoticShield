@@ -1,0 +1,28 @@
+.circular-text-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circular-text {
+  position: absolute;
+  inset: 0;
+}
+
+.circular-letter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  display: inline-block;
+  line-height: 1;
+}
+
+.circular-text-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

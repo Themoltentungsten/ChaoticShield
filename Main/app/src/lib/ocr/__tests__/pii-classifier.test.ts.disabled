@@ -1,0 +1,198 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Tests for the PII classifier (regex/rule-based detection).
+// Run: npx vitest run src/lib/ocr/__tests__/pii-classifier.test.ts
+// ─────────────────────────────────────────────────────────────────────────────
+import { describe, it, expect } from "vitest";
+import { classifyText, classifyBest } from "../pii-classifier";
+
+describe("PII Classifier", () => {
+  // ── Phone numbers ──────────────────────────────────────────────────────
+  describe("Phone Number", () => {
+    it("detects Indian mobile number", () => {
+      const m = classifyBest("9876543210");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("PHONE_NUMBER");
+    });
+
+    it("detects +91 prefixed number", () => {
+      const m = classifyBest("+91 9876543210");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("PHONE_NUMBER");
+    });
+
+    it("detects +91-dash format", () => {
+      const m = classifyBest("+91-9876543210");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("PHONE_NUMBER");
+    });
+
+    it("detects 0-prefixed number", () => {
+      const m = classifyBest("09876543210");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("PHONE_NUMBER");
+    });
+
+    it("boosts confidence with context", () => {
+      const m = classifyBest("9876543210", "Phone: 9876543210");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.94);
+    });
+
+    it("rejects 5-digit number", () => {
+      const m = classifyText("12345");
+      const phone = m.find((x) => x.type === "PHONE_NUMBER");
+      expect(phone).toBeUndefined();
+    });
+  });
+
+  // ── Email ──────────────────────────────────────────────────────────────
+  describe("Email", () => {
+    it("detects standard email", () => {
+      const m = classifyBest("user@example.com");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("EMAIL");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.9);
+    });
+
+    it("detects email with dots and plus", () => {
+      const m = classifyBest("first.last+tag@domain.co.in");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("EMAIL");
+    });
+
+    it("rejects text without @", () => {
+      const m = classifyText("not an email");
+      const email = m.find((x) => x.type === "EMAIL");
+      expect(email).toBeUndefined();
+    });
+  });
+
+  // ── Aadhaar ────────────────────────────────────────────────────────────
+  describe("Aadhaar", () => {
+    it("detects 12-digit Aadhaar with spaces", () => {
+      const m = classifyBest("2345 6789 0123");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("AADHAAR");
+    });
+
+    it("detects 12-digit Aadhaar without spaces", () => {
+      const m = classifyBest("234567890123");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("AADHAAR");
+    });
+
+    it("boosts confidence with context keyword", () => {
+      const m = classifyBest("2345 6789 0123", "Aadhaar: 2345 6789 0123");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.7);
+    });
+
+    it("rejects numbers starting with 0 or 1", () => {
+      const m = classifyText("0123 4567 8901");
+      const aadhaar = m.find((x) => x.type === "AADHAAR");
+      expect(aadhaar).toBeUndefined();
+    });
+  });
+
+  // ── PAN ────────────────────────────────────────────────────────────────
+  describe("PAN", () => {
+    it("detects valid PAN format", () => {
+      const m = classifyBest("ABCDE1234F");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("PAN");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.85);
+    });
+
+    it("boosts confidence with context", () => {
+      const m = classifyBest("ABCDE1234F", "PAN: ABCDE1234F");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.94);
+    });
+
+    it("rejects lowercase PAN", () => {
+      const m = classifyText("abcde1234f");
+      const pan = m.find((x) => x.type === "PAN");
+      expect(pan).toBeUndefined();
+    });
+  });
+
+  // ── Credit card ────────────────────────────────────────────────────────
+  describe("Credit Card", () => {
+    it("detects Luhn-valid card number", () => {
+      // 4532015112830366 passes Luhn
+      const m = classifyBest("4532015112830366");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("CREDIT_CARD");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.85);
+    });
+
+    it("detects card with spaces", () => {
+      // Spaced format also matches Aadhaar regex — verify CREDIT_CARD is among results
+      const all = classifyText("4532 0151 1283 0366", "Card: 4532 0151 1283 0366");
+      const card = all.find((m) => m.type === "CREDIT_CARD");
+      expect(card).toBeDefined();
+    });
+
+    it("low confidence for non-Luhn number", () => {
+      const m = classifyText("1234567890123456");
+      const card = m.find((x) => x.type === "CREDIT_CARD");
+      // May still detect but with lower confidence
+      if (card) {
+        expect(card.confidence).toBeLessThan(0.85);
+      }
+    });
+  });
+
+  // ── Date of Birth ──────────────────────────────────────────────────────
+  describe("Date of Birth", () => {
+    it("detects DD/MM/YYYY with DOB context", () => {
+      const m = classifyBest("15/08/1990", "DOB: 15/08/1990");
+      expect(m).not.toBeNull();
+      expect(m!.type).toBe("DATE_OF_BIRTH");
+      expect(m!.confidence).toBeGreaterThanOrEqual(0.8);
+    });
+
+    it("low confidence without context", () => {
+      const m = classifyText("15/08/1990");
+      const dob = m.find((x) => x.type === "DATE_OF_BIRTH");
+      if (dob) {
+        expect(dob.confidence).toBeLessThanOrEqual(0.55);
+      }
+    });
+  });
+
+  // ── False positives ────────────────────────────────────────────────────
+  describe("False positives", () => {
+    it("does not classify random short text as PII", () => {
+      const m = classifyText("Hello World");
+      expect(m.length).toBe(0);
+    });
+
+    it("does not classify common words as PII", () => {
+      const m = classifyText("The quick brown fox");
+      expect(m.length).toBe(0);
+    });
+
+    it("empty string returns no matches", () => {
+      const m = classifyText("");
+      expect(m.length).toBe(0);
+    });
+
+    it("whitespace-only returns no matches", () => {
+      const m = classifyText("   ");
+      expect(m.length).toBe(0);
+    });
+  });
+
+  // ── classifyBest ───────────────────────────────────────────────────────
+  describe("classifyBest", () => {
+    it("returns null for non-PII text", () => {
+      expect(classifyBest("just some text")).toBeNull();
+    });
+
+    it("returns the highest confidence match", () => {
+      // Text contains both phone and email
+      const m = classifyBest("9876543210 user@example.com");
+      expect(m).not.toBeNull();
+      // Both should be detected; best picks the higher confidence one
+      expect(["PHONE_NUMBER", "EMAIL"]).toContain(m!.type);
+    });
+  });
+});

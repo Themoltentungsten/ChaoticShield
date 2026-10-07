@@ -1,0 +1,49 @@
+AI detection error: ApiError: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+    at throwErrorIfNotOK (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:14090:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:13753:13
+    at async Models.generateContent (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:15221:24)
+    at async callGemini (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:157:20)
+    at async detectRegions (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:101:15)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/index.js:663:35 {
+  status: 503
+}
+AI detection error: [TypeError: fetch failed] {
+  [cause]: Error: getaddrinfo ENOTFOUND generativelanguage.googleapis.com
+      at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'generativelanguage.googleapis.com'
+  }
+}
+AI detection error: ApiError: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+    at throwErrorIfNotOK (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:14090:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:13753:13
+    at async Models.generateContent (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:15221:24)
+    at async callGemini (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:157:20)
+    at async detectRegions (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:101:15)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/index.js:663:35 {
+  status: 503
+}
+AI detection error: ApiError: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+    at throwErrorIfNotOK (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:14090:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:13753:13
+    at async Models.generateContent (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:15221:24)
+    at async callGemini (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:157:20)
+    at async detectRegions (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:101:15)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/index.js:663:35 {
+  status: 503
+}
+AI detection error: ApiError: {"error":{"code":503,"message":"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","status":"UNAVAILABLE"}}
+    at throwErrorIfNotOK (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:14090:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:13753:13
+    at async Models.generateContent (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/node_modules/@google/genai/dist/node/index.mjs:15221:24)
+    at async callGemini (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:157:20)
+    at async detectRegions (file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/gemini-detector.js:101:15)
+    at async file:///C:/Users/Yash/Desktop/Image%20Encryption/Main/app/server/index.js:663:35 {
+  status: 503
+}

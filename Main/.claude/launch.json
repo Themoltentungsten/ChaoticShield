@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chaoticshield-dev",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d app && node server/index.js --port 3100"],
+      "port": 3100
+    }
+  ]
+}

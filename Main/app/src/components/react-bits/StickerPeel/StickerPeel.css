@@ -1,0 +1,146 @@
+/* Adapted from React Bits "Sticker Peel" (https://reactbits.dev/animations/sticker-peel).
+   Static / clickable variant: the drag behaviour is removed so the sticker can live
+   inside a nav button. The peel is pure CSS (clip-path on hover/active); a tiny JS
+   handler in StickerPeel.tsx moves the SVG point-light with the cursor. Filter ids are
+   namespaced with `sp-` to avoid colliding with other <defs> on the page. */
+
+.sticker-peel {
+  --sticker-p: 10px;
+  --sticker-rotate: 0deg;
+  --sticker-peelback-hover: 30%;
+  --sticker-peelback-active: 40%;
+  --sticker-start: calc(-1 * var(--sticker-p));
+  --sticker-end: calc(100% + var(--sticker-p));
+  --sticker-shadow-opacity: 0.6;
+  --sticker-lighting-constant: 0.1;
+  --peel-direction: 0deg;
+
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.sticker-container {
+  position: relative;
+  transform: rotate(var(--peel-direction));
+  transform-origin: center;
+}
+
+.sticker-container * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+  transition: clip-path 0.6s ease-out;
+  filter: url(#sp-dropShadow);
+}
+
+.sticker-main > * {
+  transform: rotate(calc(-1 * var(--peel-direction)));
+}
+
+.sticker-lighting {
+  filter: url(#sp-pointLight);
+}
+
+.sticker-peel:hover .sticker-main,
+.sticker-peel.touch-active .sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-peelback-hover),
+    var(--sticker-end) var(--sticker-peelback-hover),
+    var(--sticker-end) var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+}
+
+.sticker-peel:active .sticker-main {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-peelback-active),
+    var(--sticker-end) var(--sticker-peelback-active),
+    var(--sticker-end) var(--sticker-end),
+    var(--sticker-start) var(--sticker-end)
+  );
+}
+
+.sticker-image {
+  transform: rotate(var(--sticker-rotate));
+}
+
+.flap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: calc(-100% - var(--sticker-p) - var(--sticker-p));
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-start) var(--sticker-start)
+  );
+  transform: scaleY(-1);
+  transition: all 0.6s ease-out;
+}
+
+.flap > * {
+  transform: rotate(calc(-1 * var(--peel-direction)));
+}
+
+.sticker-peel:hover .flap,
+.sticker-peel.touch-active .flap {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-peelback-hover),
+    var(--sticker-start) var(--sticker-peelback-hover)
+  );
+  top: calc(-100% + 2 * var(--sticker-peelback-hover) - 1px);
+}
+
+.sticker-peel:active .flap {
+  clip-path: polygon(
+    var(--sticker-start) var(--sticker-start),
+    var(--sticker-end) var(--sticker-start),
+    var(--sticker-end) var(--sticker-peelback-active),
+    var(--sticker-start) var(--sticker-peelback-active)
+  );
+  top: calc(-100% + 2 * var(--sticker-peelback-active) - 1px);
+}
+
+.flap-lighting {
+  filter: url(#sp-pointLightFlipped);
+}
+
+.flap-image {
+  transform: rotate(var(--sticker-rotate));
+  filter: url(#sp-expandAndFill);
+}
+
+.sticker-image,
+.flap-image {
+  width: var(--sticker-width, 200px);
+  height: auto;
+}
+
+.sticker-main,
+.flap {
+  will-change: clip-path, transform;
+}
+
+/* Touch devices peel on tap (handled by the `touch-active` class in JS). */
+@media (hover: none) and (pointer: coarse) {
+  .sticker-container {
+    touch-action: manipulation;
+  }
+}
